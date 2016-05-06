@@ -1,7 +1,9 @@
 package com.turman.girl.app.ui.activity;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,14 +46,14 @@ public class HomeActivity extends BaseActivity {
 
     protected int curr_page;
     protected int page_size;
-    protected List<String> imgUrlList;
+    protected List<ImageEntity> imgUrlList;
     protected RecyclerAdapter recyclerAdapter;
 
     @Override
     protected void beforeCreate() {
         setTheme(R.style.AppThemeRed);
         curr_page = 1;
-        page_size = 20;
+        page_size = 10;
         imgUrlList = new ArrayList<>();
     }
 
@@ -71,6 +73,17 @@ public class HomeActivity extends BaseActivity {
     protected void initView(View view) {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerAdapter = new RecyclerAdapter(imgUrlList);
+        recyclerAdapter.setOnClickItemListener(new RecyclerAdapter.OnClickItemListener() {
+            @Override
+            public void onClick(int position) {
+                Intent intent = new Intent(HomeActivity.this, ShowActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString(ShowActivity.TITLE, imgUrlList.get(position).title);
+                bundle.putString(ShowActivity.URL, imgUrlList.get(position).img);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
         mRecyclerView.setAdapter(recyclerAdapter);
 
         mRecyclerView.addOnScrollListener(new HidingScrollListener() {
@@ -83,44 +96,55 @@ public class HomeActivity extends BaseActivity {
             public void onShow() {
                 showViews();
             }
+
+            @Override
+            public void onBottom() {
+                curr_page++;
+                loadData();
+            }
         });
 
+        //初始化加载数据
+        loadData();
+    }
+
+    private void loadData() {
         Map<String, Object> params = new HashMap<>();
         params.put("page",curr_page);
         params.put("size",page_size);
         mSubscriptions.add(
                 Observable.just(params)
-                .flatMap(new Func1<Map<String, Object>, Observable<ImageListResult>>() {
-                    @Override
-                    public Observable<ImageListResult> call(Map<String, Object> stringObjectMap) {
-                        return NetHelper.getImgService().getList((int)stringObjectMap.get("page"),(int)stringObjectMap.get("size"));
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ImageListResult>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        Toast.makeText(HomeActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(ImageListResult imageListResult) {
-                        List<ImageEntity> list = imageListResult.tngou;
-                        if (list != null && list.size()> 0) {
-                            for (ImageEntity entity : list) {
-                                imgUrlList.add(entity.img);
+                        .flatMap(new Func1<Map<String, Object>, Observable<ImageListResult>>() {
+                            @Override
+                            public Observable<ImageListResult> call(Map<String, Object> stringObjectMap) {
+                                return NetHelper.getImgService().getList((int)stringObjectMap.get("page"),(int)stringObjectMap.get("size"));
                             }
-                            recyclerAdapter.notifyDataSetChanged();
-                        }
-                    }
-                })
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<ImageListResult>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                e.printStackTrace();
+                                Toast.makeText(HomeActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onNext(ImageListResult imageListResult) {
+                                List<ImageEntity> list = imageListResult.tngou;
+                                if (list != null && list.size()> 0) {
+                                    for (ImageEntity entity : list) {
+                                        imgUrlList.add(entity);
+                                    }
+                                    recyclerAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        })
         );
     }
 

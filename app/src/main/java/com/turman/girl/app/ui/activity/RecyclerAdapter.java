@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.turman.girl.app.R;
+import com.turman.girl.app.bean.ImageEntity;
 
 import java.util.List;
 
@@ -17,10 +18,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private static final int TYPE_HEADER = 2;
     private static final int TYPE_ITEM = 1;
-    private List<String> mItemList;
+    private List<ImageEntity> mItemList;
     private Context context;
 
-    public RecyclerAdapter(List<String> itemList) {
+    private OnClickItemListener onClickItemListener;
+
+    public void setOnClickItemListener(OnClickItemListener onClickItemListener) {
+        this.onClickItemListener = onClickItemListener;
+    }
+
+    public RecyclerAdapter(List<ImageEntity> itemList) {
         mItemList = itemList;
     }
 
@@ -38,10 +45,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         if (!isPositionHeader(position)) {
-            RecyclerItemViewHolder holder = (RecyclerItemViewHolder) viewHolder;
-            String itemText = mItemList.get(position - 1); // header
+            final RecyclerItemViewHolder holder = (RecyclerItemViewHolder) viewHolder;
+            if (onClickItemListener != null){
+                holder.itemImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onClickItemListener.onClick(position-1);
+                    }
+                });
+            }
+            String itemText = mItemList.get(position - 1).img; // header
             holder.setItemImage(context, itemText);
         }
     }
@@ -69,4 +84,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return position == 0;
     }
 
+    public interface OnClickItemListener{
+        void onClick(int position);
+    }
 }

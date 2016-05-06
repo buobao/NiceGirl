@@ -14,7 +14,7 @@ import com.turman.girl.app.net.NetHelper;
 
 public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
-    private final ImageView itemImageView;
+    public final ImageView itemImageView;
 
     public RecyclerItemViewHolder(final View parent, ImageView itemImageView) {
         super(parent);
@@ -36,8 +36,6 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
                 .centerCrop()
                 .into(itemImageView);
     }
-
-
 
 
 

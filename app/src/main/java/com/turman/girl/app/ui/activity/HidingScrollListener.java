@@ -18,7 +18,6 @@ public abstract class HidingScrollListener extends RecyclerView.OnScrollListener
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
-
         int firstVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
         if (firstVisibleItem == 0) {
@@ -42,6 +41,21 @@ public abstract class HidingScrollListener extends RecyclerView.OnScrollListener
         }
     }
 
+    @Override
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        super.onScrollStateChanged(recyclerView, newState);
+        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+        int lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
+        int visibleItemCount = linearLayoutManager.getChildCount();
+        int totalItemCount = linearLayoutManager.getItemCount();
+        if ((visibleItemCount > 0 && newState == RecyclerView.SCROLL_STATE_IDLE &&
+                (lastVisibleItemPosition) >= totalItemCount - 1)) {
+            onBottom();
+        }
+    }
+
     public abstract void onHide();
     public abstract void onShow();
+    public abstract void onBottom();
 }

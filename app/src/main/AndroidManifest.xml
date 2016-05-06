@@ -21,6 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activity.ShowActivity"
+            android:screenOrientation="portrait"/>
 
         <meta-data android:name="com.turman.girl.app.glide.CustomImageSizeGlideModule"
             android:value="GlideModule"/>

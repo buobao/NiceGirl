@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.turman.girl.app.db.ImageDB;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import rx.Subscription;
  * Created by dqf on 2016/5/6.
  */
 public abstract class BaseActivity extends AppCompatActivity {
-
+    protected ImageDB mImageDB;
     protected Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -36,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         beforeCreate();
+        mImageDB = new ImageDB(getApplicationContext());
         super.onCreate(savedInstanceState);
         View view = getLayoutInflater().inflate(getLayout(),null);
         setContentView(view);

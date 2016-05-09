@@ -3,7 +3,8 @@
     package="com.turman.girl.app">
 
     <!--忽略该库的最低版本限制-->
-    <uses-sdk tools:overrideLibrary="com.jakewharton.rxbinding"/>
+    <uses-sdk tools:overrideLibrary="com.jakewharton.rxbinding,jp.wasabeef.recyclerview"/>
+
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application

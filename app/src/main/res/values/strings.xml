@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">NiceGirl</string>
     <string name="fab_description">收藏</string>
+    <string name="collection_title">收藏的图片</string>
 </resources>

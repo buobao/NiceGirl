@@ -3,7 +3,10 @@ package com.turman.girl.app.ui.activity;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -20,6 +23,10 @@ import butterknife.Bind;
 public class ShowActivity extends BaseActivity {
     public static final String TITLE = "title";
     public static final String URL = "url";
+    public static final String TYPE = "type";
+
+    public static final String MENU_NORMAL = "normal";
+    public static final String MENU_SHOW = "show";
 
     @Bind(R.id.toolbar)
     protected Toolbar mToolbar;
@@ -27,6 +34,17 @@ public class ShowActivity extends BaseActivity {
     protected TouchImageView mTouchImageView;
 
     protected Bundle mBundle;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        String menu_type = mBundle.getString(TYPE);
+        if (MENU_NORMAL.equals(menu_type)){
+            getMenuInflater().inflate(R.menu.act_show_menu,menu);
+        } else {
+            getMenuInflater().inflate(R.menu.act_show_collect_menu,menu);
+        }
+        return true;
+    }
 
     @Override
     protected int getLayout() {
@@ -49,6 +67,30 @@ public class ShowActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.collection_img:
+                        if (!mImageDB.queryByURL(mBundle.getString(URL))) {
+                            mImageDB.insert(mBundle.getString(TITLE),mBundle.getString(URL));
+                        }
+                        Toast.makeText(ShowActivity.this,"已收藏",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.save_img:
+                        Toast.makeText(ShowActivity.this,"已保存到本地相册",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.remove_img:
+                        Toast.makeText(ShowActivity.this,"已从收藏中移除",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.clear_img:
+                        mImageDB.clear();
+                        Toast.makeText(ShowActivity.this,"已清空收藏除",Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return false;
             }
         });
     }

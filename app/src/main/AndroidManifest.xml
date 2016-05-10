@@ -5,7 +5,12 @@
     <!--忽略该库的最低版本限制-->
     <uses-sdk tools:overrideLibrary="com.jakewharton.rxbinding,jp.wasabeef.recyclerview"/>
 
+    <!--网络-->
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!--扩展文件读\存-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"

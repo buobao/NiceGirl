@@ -79,6 +79,14 @@ public class ImageDB extends SQLiteOpenHelper {
         String[] whereValue ={ Integer.toString(id) };
         db.delete(TABLE_NAME, where, whereValue);
     }
+
+    public void deleteByUrl(String url) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String where = IMAGE_URL + " = ?";
+        String[] whereValue ={ url };
+        db.delete(TABLE_NAME, where, whereValue);
+    }
+
     //修改操作
     public void update(int id, String title,String url)
     {

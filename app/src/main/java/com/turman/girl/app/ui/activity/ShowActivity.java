@@ -13,6 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.turman.girl.app.R;
 import com.turman.girl.app.net.NetHelper;
 import com.turman.girl.app.ui.BaseActivity;
+import com.turman.girl.app.utils.FileUtil;
 import com.turman.girl.app.widget.TouchImageView;
 
 import butterknife.Bind;
@@ -80,9 +81,18 @@ public class ShowActivity extends BaseActivity {
                         Toast.makeText(ShowActivity.this,"已收藏",Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.save_img:
-                        Toast.makeText(ShowActivity.this,"已保存到本地相册",Toast.LENGTH_SHORT).show();
+                        if (mTouchImageView.getDrawable() != null) {
+                            mTouchImageView.setDrawingCacheEnabled(true);
+                            FileUtil.saveImage(mTouchImageView.getDrawingCache(), mBundle.getString(TITLE), getApplicationContext());
+                            mTouchImageView.setDrawingCacheEnabled(false);
+                            Toast.makeText(ShowActivity.this,"已保存到本地相册",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(ShowActivity.this,"图片未加载,请稍后再试",Toast.LENGTH_SHORT).show();
+                        }
+
                         break;
                     case R.id.remove_img:
+                        mImageDB.deleteByUrl(mBundle.getString(URL));
                         Toast.makeText(ShowActivity.this,"已从收藏中移除",Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.clear_img:

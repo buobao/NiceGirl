@@ -15,7 +15,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.turman.girl.app.R;
 import com.turman.girl.app.bean.ImageEntity;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import butterknife.Bind;
 import rx.Observable;
@@ -71,11 +71,13 @@ public class HomeActivity extends BaseActivity {
         public void onClick(int position) {
             Intent intent = new Intent(HomeActivity.this, ShowActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString(ShowActivity.TITLE, imgUrlList.get(position).title);
-            bundle.putString(ShowActivity.URL, imgUrlList.get(position).img);
             if (FLAG_COLLECTION.equals(flag)) {
                 bundle.putString(ShowActivity.TYPE, ShowActivity.MENU_SHOW);
+                bundle.putString(ShowActivity.TITLE, collectedList.get(position).title);
+                bundle.putString(ShowActivity.URL, collectedList.get(position).img);
             } else {
+                bundle.putString(ShowActivity.TITLE, imgUrlList.get(position).title);
+                bundle.putString(ShowActivity.URL, imgUrlList.get(position).img);
                 bundle.putString(ShowActivity.TYPE, ShowActivity.MENU_NORMAL);
             }
             intent.putExtras(bundle);
@@ -147,6 +149,16 @@ public class HomeActivity extends BaseActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+//                Toast.makeText(HomeActivity.this,"refresh",Toast.LENGTH_SHORT).show();
+                if (FLAG_COLLECTION.equals(flag)){
+                    isAllLoad_coll = false;
+                    coll_page = 1;
+                    collectedList.clear();
+                } else {
+                    isAllLoad_net = false;
+                    curr_page = 1;
+                    imgUrlList.clear();
+                }
                 loadData();
             }
         });
@@ -173,12 +185,10 @@ public class HomeActivity extends BaseActivity {
                 }
             }
         });
-
-
     }
 
     private void loadData() {
-        if (FLAG_NET.equals(flag)) {
+        if (FLAG_NET.equals(flag) && !isAllLoad_net) {
             Map<String, Object> params = new HashMap<>();
             params.put("page",curr_page);
             params.put("size",page_size);
@@ -187,7 +197,8 @@ public class HomeActivity extends BaseActivity {
                             .flatMap(new Func1<Map<String, Object>, Observable<ImageListResult>>() {
                                 @Override
                                 public Observable<ImageListResult> call(Map<String, Object> stringObjectMap) {
-                                    return NetHelper.getImgService().getList((int) stringObjectMap.get("page"), (int) stringObjectMap.get("size"));
+                                    Random ra =new Random();
+                                    return NetHelper.getImgService().getList((int) stringObjectMap.get("page"), (int) stringObjectMap.get("size"),ra.nextInt(7)+1);
                                 }
                             })
                             .subscribeOn(Schedulers.io())
@@ -201,7 +212,7 @@ public class HomeActivity extends BaseActivity {
                                 @Override
                                 public void onError(Throwable e) {
                                     e.printStackTrace();
-                                    Toast.makeText(HomeActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(HomeActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
@@ -220,24 +231,24 @@ public class HomeActivity extends BaseActivity {
             );
         }
 
-        if(FLAG_COLLECTION.equals(flag)) {
+        if(FLAG_COLLECTION.equals(flag) && !isAllLoad_coll) {
             //从本地读取收藏的记录
             new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Cursor cursor = mImageDB.select(coll_page, coll_size);
-                        if (cursor.getCount() == 0) {
-                            isAllLoad_coll = true;
-                        }
-                        while (cursor.moveToNext()) {
-                            ImageEntity entity = new ImageEntity();
-                            entity.title =cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_TITLE));
-                            entity.img = cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_URL));
-                            collectedList.add(entity);
-                        }
-                        cursor.close();
-                        mHandler.sendEmptyMessage(0);
+                @Override
+                public void run() {
+                    Cursor cursor = mImageDB.select(coll_page, coll_size);
+                    if (cursor.getCount() < coll_size) {
+                        isAllLoad_coll = true;
                     }
+                    while (cursor.moveToNext()) {
+                        ImageEntity entity = new ImageEntity();
+                        entity.title =cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_TITLE));
+                        entity.img = cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_URL));
+                        collectedList.add(entity);
+                    }
+                    cursor.close();
+                    mHandler.sendEmptyMessage(0);
+                }
             }).start();
         }
 

@@ -11,5 +11,5 @@ import rx.Observable;
  */
 public interface ImgService {
     @GET(NetHelper.LIST)
-    Observable<ImageListResult> getList(@Query("page")int page, @Query("rows") int rows);
+    Observable<ImageListResult> getList(@Query("page")int page, @Query("rows") int rows,@Query("id") int id);
 }

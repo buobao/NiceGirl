@@ -1,5 +1,6 @@
 package com.turman.girl.app.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -44,6 +45,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         throw new RuntimeException("There is no type that matches the type " + viewType + " + make sure your using types correctly");
     }
 
+    @SuppressLint("RecyclerView")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         if (!isPositionHeader(position)) {

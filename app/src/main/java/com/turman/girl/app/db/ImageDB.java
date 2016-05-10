@@ -1,5 +1,6 @@
 package com.turman.girl.app.db;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -41,21 +42,21 @@ public class ImageDB extends SQLiteOpenHelper {
     //分页查询
     public Cursor select(int page_num, int page_size) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null,(page_num-1)*page_size+","+page_size);
+        @SuppressLint("Recycle") Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null,(page_num-1)*page_size+","+page_size);
         return cursor;
     }
 
     //查询所有
     public Cursor selectAll(){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
+        @SuppressLint("Recycle") Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
         return cursor;
     }
 
     //依据url查询数据是否存在
     public boolean queryByURL(String url){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, IMAGE_URL + " = ?", new String[]{url}, null, null, null);
+        @SuppressLint("Recycle") Cursor cursor = db.query(TABLE_NAME, null, IMAGE_URL + " = ?", new String[]{url}, null, null, null);
         return cursor.getCount() > 0;
     }
 

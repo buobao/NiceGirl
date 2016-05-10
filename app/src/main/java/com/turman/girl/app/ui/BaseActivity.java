@@ -1,5 +1,6 @@
 package com.turman.girl.app.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,8 +19,10 @@ import rx.Subscription;
 /**
  * Created by dqf on 2016/5/6.
  */
+@SuppressWarnings("ALL")
 public abstract class BaseActivity extends AppCompatActivity {
     protected ImageDB mImageDB;
+    @SuppressLint("HandlerLeak")
     protected Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {

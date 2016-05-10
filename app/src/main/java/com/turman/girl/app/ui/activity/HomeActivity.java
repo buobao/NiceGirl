@@ -39,6 +39,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by dqf on 2016/5/6.
  */
+@SuppressWarnings("ALL")
 public class HomeActivity extends BaseActivity {
     public static final String FLAG_NET = "show_net";
     public static final String FLAG_COLLECTION = "show_collection";

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -29,6 +30,7 @@
         android:layout_marginRight="16dp"
         android:background="@drawable/fab_bcg"
         android:src="@mipmap/ic_favorite_outline_white_24dp"
-        android:contentDescription="@string/fab_description"/>
+        android:contentDescription="@string/fab_description"
+        tools:ignore="RtlHardcoded" />
 
 </FrameLayout>

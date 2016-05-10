@@ -21,6 +21,7 @@ import butterknife.Bind;
 /**
  * Created by dqf on 2016/5/6.
  */
+@SuppressWarnings("ALL")
 public class ShowActivity extends BaseActivity {
     public static final String TITLE = "title";
     public static final String URL = "url";

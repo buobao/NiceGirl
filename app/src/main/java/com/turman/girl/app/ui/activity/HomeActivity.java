@@ -169,21 +169,18 @@ public class HomeActivity extends BaseActivity {
             loadData();
         }
 
-        mFabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (FLAG_NET.equals(flag)) {
-                    flag = FLAG_COLLECTION;
-                    if (collectedList.size() == 0) {
-                        loadData();
-                    }
-                    mRecyclerView.setAdapter(collRecyclerAdapter);
-                    mToolbar.setTitle(getString(R.string.collection_title));
-                } else {
-                    flag = FLAG_NET;
-                    mRecyclerView.setAdapter(recyclerAdapter);
-                    mToolbar.setTitle(getString(R.string.app_name));
+        mFabButton.setOnClickListener(v -> {
+            if (FLAG_NET.equals(flag)) {
+                flag = FLAG_COLLECTION;
+                if (collectedList.size() == 0) {
+                    loadData();
                 }
+                mRecyclerView.setAdapter(collRecyclerAdapter);
+                mToolbar.setTitle(getString(R.string.collection_title));
+            } else {
+                flag = FLAG_NET;
+                mRecyclerView.setAdapter(recyclerAdapter);
+                mToolbar.setTitle(getString(R.string.app_name));
             }
         });
     }

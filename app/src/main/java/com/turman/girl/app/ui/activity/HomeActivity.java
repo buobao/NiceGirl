@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 
 import com.turman.girl.app.R;
 import com.turman.girl.app.bean.ImageEntity;
-import com.turman.girl.app.bean.ImageListResult;
 import com.turman.girl.app.db.ImageDB;
 import com.turman.girl.app.net.NetHelper;
 import com.turman.girl.app.ui.BaseActivity;
@@ -31,9 +30,7 @@ import java.util.Random;
 
 import butterknife.Bind;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -147,21 +144,17 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-//                Toast.makeText(HomeActivity.this,"refresh",Toast.LENGTH_SHORT).show();
-                if (FLAG_COLLECTION.equals(flag)){
-                    isAllLoad_coll = false;
-                    coll_page = 1;
-                    collectedList.clear();
-                } else {
-                    isAllLoad_net = false;
-                    curr_page = 1;
-                    imgUrlList.clear();
-                }
-                loadData();
+        mSwipeRefreshLayout.setOnRefreshListener(()->{
+            if (FLAG_COLLECTION.equals(flag)){
+                isAllLoad_coll = false;
+                coll_page = 1;
+                collectedList.clear();
+            } else {
+                isAllLoad_net = false;
+                curr_page = 1;
+                imgUrlList.clear();
             }
+            loadData();
         });
 
         //初始化加载数据
@@ -192,38 +185,21 @@ public class HomeActivity extends BaseActivity {
             params.put("size",page_size);
             mSubscriptions.add(
                     Observable.just(params)
-                            .flatMap(new Func1<Map<String, Object>, Observable<ImageListResult>>() {
-                                @Override
-                                public Observable<ImageListResult> call(Map<String, Object> stringObjectMap) {
-                                    Random ra =new Random();
-                                    return NetHelper.getImgService().getList((int) stringObjectMap.get("page"), (int) stringObjectMap.get("size"),ra.nextInt(7)+1);
-                                }
+                            .flatMap((stringObjectMap)->{
+                                Random ra =new Random();
+                                return NetHelper.getImgService().getList((int) stringObjectMap.get("page"), (int) stringObjectMap.get("size"),ra.nextInt(7)+1);
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Subscriber<ImageListResult>() {
-                                @Override
-                                public void onCompleted() {
-
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    e.printStackTrace();
-//                                    Toast.makeText(HomeActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onNext(ImageListResult imageListResult) {
-                                    List<ImageEntity> list = imageListResult.tngou;
-                                    if (list != null && list.size() > 0) {
-                                        for (ImageEntity entity : list) {
-                                            imgUrlList.add(entity);
-                                        }
-                                        recyclerAdapter.notifyDataSetChanged();
-                                    } else {
-                                        isAllLoad_net = true;
+                            .subscribe((imageListResult)->{
+                                List<ImageEntity> list = imageListResult.tngou;
+                                if (list != null && list.size() > 0) {
+                                    for (ImageEntity entity : list) {
+                                        imgUrlList.add(entity);
                                     }
+                                    recyclerAdapter.notifyDataSetChanged();
+                                } else {
+                                    isAllLoad_net = true;
                                 }
                             })
             );
@@ -231,22 +207,19 @@ public class HomeActivity extends BaseActivity {
 
         if(FLAG_COLLECTION.equals(flag) && !isAllLoad_coll) {
             //从本地读取收藏的记录
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Cursor cursor = mImageDB.select(coll_page, coll_size);
-                    if (cursor.getCount() < coll_size) {
-                        isAllLoad_coll = true;
-                    }
-                    while (cursor.moveToNext()) {
-                        ImageEntity entity = new ImageEntity();
-                        entity.title =cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_TITLE));
-                        entity.img = cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_URL));
-                        collectedList.add(entity);
-                    }
-                    cursor.close();
-                    mHandler.sendEmptyMessage(0);
+            new Thread(()->{
+                Cursor cursor = mImageDB.select(coll_page, coll_size);
+                if (cursor.getCount() < coll_size) {
+                    isAllLoad_coll = true;
                 }
+                while (cursor.moveToNext()) {
+                    ImageEntity entity = new ImageEntity();
+                    entity.title =cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_TITLE));
+                    entity.img = cursor.getString(cursor.getColumnIndex(ImageDB.IMAGE_URL));
+                    collectedList.add(entity);
+                }
+                cursor.close();
+                mHandler.sendEmptyMessage(0);
             }).start();
         }
 

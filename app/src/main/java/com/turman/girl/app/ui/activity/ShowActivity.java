@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -65,44 +64,36 @@ public class ShowActivity extends BaseActivity {
         setTitle(mBundle.getString(TITLE));
         mToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         mToolbar.setNavigationIcon(R.mipmap.back32);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.collection_img:
-                        if (!mImageDB.queryByURL(mBundle.getString(URL))) {
-                            mImageDB.insert(mBundle.getString(TITLE),mBundle.getString(URL));
-                        }
-                        Toast.makeText(ShowActivity.this,"已收藏",Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.save_img:
-                        if (mTouchImageView.getDrawable() != null) {
-                            mTouchImageView.setDrawingCacheEnabled(true);
-                            FileUtil.saveImage(mTouchImageView.getDrawingCache(), mBundle.getString(TITLE), getApplicationContext());
-                            mTouchImageView.setDrawingCacheEnabled(false);
-                            Toast.makeText(ShowActivity.this,"已保存到本地相册",Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ShowActivity.this,"图片未加载,请稍后再试",Toast.LENGTH_SHORT).show();
-                        }
+        mToolbar.setNavigationOnClickListener(v ->{finish();});
+        mToolbar.setOnMenuItemClickListener((item)->{
+            switch (item.getItemId()) {
+                case R.id.collection_img:
+                    if (!mImageDB.queryByURL(mBundle.getString(URL))) {
+                        mImageDB.insert(mBundle.getString(TITLE),mBundle.getString(URL));
+                    }
+                    Toast.makeText(ShowActivity.this,"已收藏",Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.save_img:
+                    if (mTouchImageView.getDrawable() != null) {
+                        mTouchImageView.setDrawingCacheEnabled(true);
+                        FileUtil.saveImage(mTouchImageView.getDrawingCache(), mBundle.getString(TITLE), getApplicationContext());
+                        mTouchImageView.setDrawingCacheEnabled(false);
+                        Toast.makeText(ShowActivity.this,"已保存到本地相册",Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ShowActivity.this,"图片未加载,请稍后再试",Toast.LENGTH_SHORT).show();
+                    }
 
-                        break;
-                    case R.id.remove_img:
-                        mImageDB.deleteByUrl(mBundle.getString(URL));
-                        Toast.makeText(ShowActivity.this,"已从收藏中移除",Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.clear_img:
-                        mImageDB.clear();
-                        Toast.makeText(ShowActivity.this,"已清空收藏除",Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                return false;
+                    break;
+                case R.id.remove_img:
+                    mImageDB.deleteByUrl(mBundle.getString(URL));
+                    Toast.makeText(ShowActivity.this,"已从收藏中移除",Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.clear_img:
+                    mImageDB.clear();
+                    Toast.makeText(ShowActivity.this,"已清空收藏除",Toast.LENGTH_SHORT).show();
+                    break;
             }
+            return false;
         });
     }
 

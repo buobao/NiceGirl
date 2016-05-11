@@ -12,6 +12,7 @@ public class NetHelper {
 
     public static final String URL_BASE = "http://www.tngou.net/tnfs/api/";
     public static final String IMG_BASE_URL = "http://tnfs.tngou.net/img";
+    //Cat API http://thecatapi.com/
 
     private static Retrofit client = null;
 

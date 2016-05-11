@@ -4,6 +4,10 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     </style>
 
+    <style name="Launcher" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/window_background</item>
+    </style>
+
     <style name="AppThemeRed" parent="AppTheme">
         <item name="colorPrimary">@color/color_primary_red</item>
         <item name="colorPrimaryDark">@color/color_primary_red_dark</item>
